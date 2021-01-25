@@ -1,0 +1,18 @@
+create database mydatabase;
+use mydatabase;
+create table contacts (
+    contact_id int(11) not null auto_increment,
+    last_name varchar(30) not null ,
+    first_name varchar(25),
+    birthday date,
+    constraint contacts_pk primary key (contact_id)
+);
+
+create table suppliers(
+    suppliers_id int(30) not null auto_increment primary key,
+    supplier_name varchar(30) not null ,
+    account_rep varchar(30) not null default 'TBD')
+;
+alter table contacts drop column last_name;
+alter table contacts add last_name varchar(50) not null;
+alter table contacts modify last_name varchar(100) null;
