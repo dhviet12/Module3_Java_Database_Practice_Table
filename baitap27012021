@@ -1,0 +1,33 @@
+create database tourmanagement;
+use tourmanagement;
+create table city(city_id int, city_name varchar(50));
+
+create database studentmanagement;
+use studentmanagement;
+create table address(id int, address varchar(255));
+create table classes(id int, language varchar(50),description varchar(255));
+create table students(id int ,fullname varchar(50),address_id int,phone int unique, class_id int);
+create table course(id int, name varchar(50), description varchar(255));
+create table point(id int, course_id int , student_id int,point double);
+
+alter table address add primary key (id);
+alter table classes add primary key (id);
+alter table students add foreign key (address_id) references address(id);
+alter table students add foreign key (class_id) references classes(id);
+alter table course add primary key (id);
+alter table point add foreign key (course_id) references course(id);
+alter table students add primary key (id);
+alter table point add foreign key (student_id) references students(id);
+
+insert into address values (1,'Ha Noi'), (2,'HCM'), (3,'Da Nang'),(4,'Hue'),(5,'Nam Dinh');
+alter table classes modify  column description varchar(255) default 'Full time';
+insert into classes values (1,'Java','Full time'), (2,'PHP','Part time'),(3,'Python','Full time'),(4,'Java','Part time'),(5,'PHP','Part time');
+insert into students values (1,'Duy Anh',1,098531111,1),(2,'Viet',1,0985986697,1),(3,'Nam',2,098821111,2),(4,'Tuan',3,0982111111,3),(5,'Minh',5,0711112241,5);
+alter table students modify  column phone varchar(11);
+insert into course values (1,'Web full stack development',''),(2,'Mobile app',''),(3,'Front end web',''),(4,'Back end web',''),(5,'Foundation','');
+insert into students values (6,'Tran Viet Anh',4,'098211122',4),(7,'Nguyen Van Duyet',1,'09822122555',1),(8,'Dao Duy Anh',2,'092111221',2),(9,'Ngo Minh Hieu',3,'09211155531',5);
+insert into point values (1,1,1,7.2),(2,3,2,5.5),(3,3,3,6.8),(4,2,4,5),(5,5,5,4.2),(6,4,6,9.1),(7,2,7,8.1),(8,1,8,6.6),(9,3,9,2.2);
+
+select class_id, count(class_id) as 'Number of students per class' from students join classes c on c.id = students.class_id group by class_id;
+select address_id, count(address_id) as 'Number of students per city' from students join address a on students.address_id = a.id group by address_id;
+select course_id, avg(point)  as 'Avg point per course' from  point join course c on c.id = point.course_id group by course_id;
