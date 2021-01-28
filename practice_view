@@ -1,0 +1,123 @@
+create database tourmanagement;
+use tourmanagement;
+create table city(city_id int, city_name varchar(50));
+
+create database studentmanagement;
+use studentmanagement;
+create table address(id int, address varchar(255));
+create table classes(id int, language varchar(50),description varchar(255));
+create table students(id int ,fullname varchar(50),address_id int,phone int unique, class_id int);
+create table course(id int, name varchar(50), description varchar(255));
+create table point(id int, course_id int , student_id int,point double);
+
+alter table address add primary key (id);
+alter table classes add primary key (id);
+alter table students add foreign key (address_id) references address(id);
+alter table students add foreign key (class_id) references classes(id);
+alter table course add primary key (id);
+alter table point add foreign key (course_id) references course(id);
+alter table students add primary key (id);
+alter table point add foreign key (student_id) references students(id);
+
+insert into address values (1,'Ha Noi'), (2,'HCM'), (3,'Da Nang'),(4,'Hue'),(5,'Nam Dinh');
+alter table classes modify  column description varchar(255) default 'Full time';
+insert into classes values (1,'Java','Full time'), (2,'PHP','Part time'),(3,'Python','Full time'),(4,'Java','Part time'),(5,'PHP','Part time');
+insert into students values (1,'Duy Anh',1,098531111,1),(2,'Viet',1,0985986697,1),(3,'Nam',2,098821111,2),(4,'Tuan',3,0982111111,3),(5,'Minh',5,0711112241,5);
+alter table students modify  column phone varchar(11);
+insert into course values (1,'Web full stack development',''),(2,'Mobile app',''),(3,'Front end web',''),(4,'Back end web',''),(5,'Foundation','');
+insert into students values (6,'Tran Viet Anh',4,'098211122',4),(7,'Nguyen Van Duyet',1,'09822122555',1),(8,'Dao Duy Anh',2,'092111221',2),(9,'Ngo Minh Hieu',3,'09211155531',5);
+insert into point values (1,1,1,7.2),(2,3,2,5.5),(3,3,3,6.8),(4,2,4,5),(5,5,5,4.2),(6,4,6,9.1),(7,2,7,8.1),(8,1,8,6.6),(9,3,9,2.2);
+
+select classes.language, count(class_id) as 'Number of students per class' from classes join students
+    s on classes.id = s.class_id group by class_id;
+select address.address, count(address_id) as 'Number of students per address' from address join students
+    s on address.id = s.address_id group by address_id;
+select course.name, avg(point)  as 'Avg point per course' from course join point
+    p on course.id = p.course_id group by course.id;
+
+use tourmanagement;
+delete from city where city_id=1;
+
+use studentmanagement;
+alter table students add foreign key (class_id) references classes(id);
+
+use tourmanagement;
+alter table city add primary key (city_id);
+insert into city values (1,'Ha Noi'),(2,'Ho Chi Minh'),(3,'Da Nang'),(4,'Dong Nai'),(5,'Phu Quoc');
+create table destination(
+    id int, destination_name varchar(50), description varchar(50), price double,city_id int
+);
+alter table destination add foreign key (city_id) references city(city_id);
+alter table destination modify column description varchar(50) default '';
+insert into destination (id,destination_name,description,price,city_id) values (1,'Ha Noi','',100000,2), (2,'Ho Chi Minh','',100000,1),(3,'Lao Cai','',50000,3),(4,'Phu Tho','',50000,4),(5,'Yen Bai','',30000,5);
+create table customer (
+    id int, customer_name varchar(50), cmnd int, year_of_birth year, city_id int
+);
+alter table customer add foreign key (city_id) references city(city_id);
+insert into customer values (1,'Nguyen Van A',00011111,1992,1),(2,'Tran Van B',021121444,1990,2),(3,'Le Van C',0211111,2000,3),(4,'Dinh Cong D',02199111,1997,4),(5,'Dao Thi E',092111441,1995,5),(6,'Nguyen Van F',20191121,1995,5);
+alter table customer modify column cmnd varchar(14);
+create table tour (
+    tour_id int , code varchar(50), tour_type int, price_destination double, start date, end date
+);
+create table tour_type(
+    tour_type_id int primary key , code_type varchar(50), type_name varchar(50)
+);
+alter table tour add foreign key (tour_type) references  tour_type(tour_type_id);
+alter table tour add primary key (tour_id);
+alter table customer add primary key (id);
+create table bill (
+    bill_id int,
+    tour_id int,
+    customer_id int,
+    status varchar(50)
+);
+alter table bill add foreign key (tour_id) references tour(tour_id);
+alter table bill add foreign key (customer_id) references customer(id);
+
+
+select * from tour where month(start) = 4 and year(start)= 2020;
+show full tables;
+
+delete from tour where tour_id= 9;
+delete from tour where tour_id= 6;
+delete from tour where tour_id= 7;
+create view result_view as select customer_name, city_name from customer join city c on customer.city_id = c.city_id;
+select * from result_view where customer_name = 'Nguyen Van A';
+update result_view set city_name = 'Ho Chi Minh' where customer_name = 'Nguyen Van A';
+delete from customer where id=7;
+
+create database classicmodels;
+
+use classicmodels;
+use tourmanagement;
+use classicmodels;
+create table customers(customerNumber int,customerName varchar(50),contactLastName varchar(50),contactFirstName varchar(50),phone varchar(50), address varchar(255));
+insert into customers values ('103','Atelier','Schimmit','Carine','40.32.2555','54 rue Royale'),
+                             ('112','Signal Gift Stores','King','Jean','992181011','8484 Strong st'),
+                             ('114','Australian Collectors','Ferguson','Peter','0395204555','636 St kilda road'),
+                             ('119','La Rochelle Gifts','Labrune','Janine','40.67.8555','67 rue des Ciquante'),
+                             ('121','Baane Mini Imports','Bergufsen','Jonas','07-98-9555','Earling gate 78');
+insert into customers values ('172','Lacorne','Bertrand','Marie','(1)42.34.2555','265, boulevard Charonne'),
+                             ('173','Cambridge Collectables','Tseng','Jerry','9818111','4658 Baden Av'),
+                             ('175','Gift Depot inc','King','Julie','22054111','25593 South Bay Ln');
+create view customers_view as select customerNumber,customerName,phone from customers;
+select * from customers_view;
+create or replace view customers_view as select customerNumber,customerName,contactFirstName,contactLastName,phone from customers;
+insert into classicmodels.customers_view value (176,'Hoang Viet','Code','Gym','0985986697');
+update classicmodels.customers_view set contactLastName='CodeGym' where customerNumber=176;
+delete from classicmodels.customers_view where customerNumber=176;
+select * from classicmodels.customers_view;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
